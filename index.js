@@ -31,6 +31,7 @@ async function run() {
 
 // assignment related api
 const assignmentCollection = client.db('assignment-11').collection('assignmentCollection')
+const submissionCollection = client.db('assignment-11').collection('submitAssignment')
 
 // get all assignments 
 app.get('/assignments', async(req, res)=>{
@@ -90,6 +91,13 @@ app.delete('/assignments/:id', async(req, res)=>{
     const id =req.params.id
     const query ={_id: new ObjectId(id)}
     const result =await assignmentCollection.deleteOne(query)
+    res.send(result)
+    })
+
+    // submitAssignment related api
+    app.post('/submittedAssignments', async(req, res)=>{
+    const submitAssignment =req.body
+    const result = await submissionCollection.insertOne(submitAssignment)
     res.send(result)
     })
 
