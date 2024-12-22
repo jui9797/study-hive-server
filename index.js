@@ -61,6 +61,30 @@ app.post('/assignments', async(req, res)=>{
     res.send(result)
 })
 
+// patch for update assignment
+app.patch('/assignments/:id', async(req,res)=>{
+  const id =req.params.id
+  const filter={_id: new ObjectId(id)}
+  const options ={upsert:true}
+  const updatedAssignment =req.body
+  const assignment ={
+    $set:{
+      
+      title: updatedAssignment.title,
+      description: updatedAssignment.description,
+      marks: updatedAssignment.marks,
+      thubmnailUrl: updatedAssignment.thubmnailUrl,
+      difficulty: updatedAssignment.difficulty,
+      dueDate: updatedAssignment.dueDate,
+      creatorName: updatedAssignment.creatorName,
+      creatorEmail: updatedAssignment.creatorEmail
+      
+    }
+  }
+  const result =await assignmentCollection.updateOne(filter, assignment, options)
+  res.send(result)
+})
+
 // delete
 app.delete('/assignments/:id', async(req, res)=>{
     const id =req.params.id
