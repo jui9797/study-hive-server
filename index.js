@@ -1,7 +1,7 @@
 const express =require('express')
 const cors =require('cors')
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app =express()
 const port =process.env.port || 5000
 
@@ -38,6 +38,14 @@ app.get('/assignments', async(req, res)=>{
     const result = await cursor.toArray()
     res.send(result)
 })
+
+// get single data by id
+app.get('/assignments/:id', async(req, res)=>{
+  const id =req.params.id
+  const query ={_id: new ObjectId(id)}
+  const result =await assignmentCollection.findOne(query)
+  res.send(result)
+  })
 
 // get maximum 3 assignments
 app.get('/limitAssignments', async(req, res)=>{
