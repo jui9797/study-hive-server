@@ -125,6 +125,21 @@ app.delete('/assignments/:id', async(req, res)=>{
       const result =await submissionCollection.findOne(query)
       res.send(result)
       })
+      //update status obtainMark, feedback 
+      app.patch('/bid/:id', async (req, res) => {
+        const id = req.params.id
+        const { status, obtainedMarks, feedback } = req.body
+        const query = { _id: new ObjectId(id) }
+        const updateDoc = {
+          $set: {
+            status,
+            obtainedMarks,
+            feedback,
+        },
+        }
+        const result = await submissionCollection.updateOne(query, updateDoc)
+        res.send(result)
+      })
 
 
     // Send a ping to confirm a successful connection
