@@ -101,6 +101,22 @@ app.delete('/assignments/:id', async(req, res)=>{
     res.send(result)
     })
 
+  //  get all submitted assignments
+    app.get('/submittedAssignments', async(req, res)=>{
+      const cursor = submissionCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+  })
+
+    // get submitted assignment by spcific email
+    app.get(`/submittedAssignments/email`,async(req, res)=>{
+      const email = req.query.email
+      const query = {submittedUserEmail:email}
+      const allEmail = submissionCollection.find(query)
+      const result = await allEmail.toArray()
+      res.send(result)
+    })
+
 
 
     // Send a ping to confirm a successful connection
