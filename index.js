@@ -35,7 +35,10 @@ const submissionCollection = client.db('assignment-11').collection('submitAssign
 
 // get all assignments 
 app.get('/assignments', async(req, res)=>{
-    const cursor = assignmentCollection.find()
+  const filter =req.query.filter
+  let query ={}
+  if(filter) query.difficulty =filter
+    const cursor = assignmentCollection.find(query)
     const result = await cursor.toArray()
     res.send(result)
 })
@@ -74,7 +77,7 @@ app.patch('/assignments/:id', async(req,res)=>{
       title: updatedAssignment.title,
       description: updatedAssignment.description,
       marks: updatedAssignment.marks,
-      thubmnailUrl: updatedAssignment.thubmnailUrl,
+      thumbnailUrl: updatedAssignment.thumbnailUrl,
       difficulty: updatedAssignment.difficulty,
       dueDate: updatedAssignment.dueDate,
       creatorName: updatedAssignment.creatorName,
@@ -125,8 +128,9 @@ app.delete('/assignments/:id', async(req, res)=>{
       const result =await submissionCollection.findOne(query)
       res.send(result)
       })
+
       //update status obtainMark, feedback 
-      app.patch('/bid/:id', async (req, res) => {
+      app.patch('/status/:id', async (req, res) => {
         const id = req.params.id
         const { status, obtainedMarks, feedback } = req.body
         const query = { _id: new ObjectId(id) }
