@@ -36,7 +36,11 @@ const submissionCollection = client.db('assignment-11').collection('submitAssign
 // get all assignments 
 app.get('/assignments', async(req, res)=>{
   const filter =req.query.filter
-  let query ={}
+  const search =req.query.search
+  let query ={title:{
+    $regex: search,
+    $options: 'i',
+  },}
   if(filter) query.difficulty =filter
     const cursor = assignmentCollection.find(query)
     const result = await cursor.toArray()
