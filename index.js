@@ -38,7 +38,7 @@ app.get('/assignments', async(req, res)=>{
   const filter =req.query.filter
   const search =req.query.search
   let query ={title:{
-    $regex: search,
+    $regex: search ||'',
     $options: 'i',
   },}
   if(filter) query.difficulty =filter
