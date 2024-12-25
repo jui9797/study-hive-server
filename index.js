@@ -3,11 +3,35 @@ const cors =require('cors')
 require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app =express()
+const jwt =require('jsonwebtoken')
+const cookieParser =require('cookie-parser')
 const port =process.env.port || 5000
 
 // middleware
-app.use(cors())
+app.use(cors({
+  origin:['http://localhost:5173'],
+  credentials:true
+}))
 app.use(express.json())
+app.use(cookieParser())
+
+// token verification
+const verifyToken =(req, res, next)=>{
+  const token =req.cookies?.token
+  console.log('token insde the verifyToken')
+  if(!token){
+    return res.status(401).send({message:'Unauthorized access'})
+  }
+
+  // verify token
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded)=>{
+    if(err){
+      return res.status(401).send({message:'Unauthorized access'})
+    }
+    req.user= decoded
+    next()
+  })
+}
 
 
 
@@ -116,11 +140,18 @@ app.delete('/assignments/:id', async(req, res)=>{
   })
 
     // get submitted assignment by spcific email
-    app.get(`/submittedAssignments/email`,async(req, res)=>{
+    app.get(`/submittedAssignments/email`,verifyToken,async(req, res)=>{
       const email = req.query.email
+      
       const query = {submittedUserEmail:email}
+      
       const allEmail = submissionCollection.find(query)
       const result = await allEmail.toArray()
+      // email same na
+      if(req.user.email !== req.query.email){
+        return res.status(403).send({message:'Forbidden access'})
+      }
+      
       res.send(result)
     })
 
@@ -147,6 +178,20 @@ app.delete('/assignments/:id', async(req, res)=>{
         }
         const result = await submissionCollection.updateOne(query, updateDoc)
         res.send(result)
+      })
+
+      // jwt token api
+      app.post('/jwt' , (req, res)=>{
+        const user =req.body
+        const token =jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'5hr'})
+        res.cookie('token', token, {httpOnly:true, secure:false})
+        .send({success:true})
+
+      })
+      // remove token api
+      app.post('/logOut', (req, res)=>{
+        res.clearCookie('token', {httpOnly:true, secure:false})
+        .send({success:true})
       })
 
 
