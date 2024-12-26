@@ -9,7 +9,10 @@ const port =process.env.port || 5000
 
 // middleware
 app.use(cors({
-  origin:['http://localhost:5173'],
+  origin:['http://localhost:5173',
+    'https://assignment-11-client-c292f.web.app',
+    'https://assignment-11-client-c292f.firebaseapp.com'
+  ],
   credentials:true
 }))
 app.use(express.json())
@@ -51,7 +54,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
 // assignment related api
 const assignmentCollection = client.db('assignment-11').collection('assignmentCollection')
@@ -184,20 +187,22 @@ app.delete('/assignments/:id', async(req, res)=>{
       app.post('/jwt' , (req, res)=>{
         const user =req.body
         const token =jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'5hr'})
-        res.cookie('token', token, {httpOnly:true, secure:false})
+        res.cookie('token', token, {httpOnly:true, secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",})
         .send({success:true})
 
       })
       // remove token api
       app.post('/logOut', (req, res)=>{
-        res.clearCookie('token', {httpOnly:true, secure:false})
+        res.clearCookie('token', {httpOnly:true, secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",})
         .send({success:true})
       })
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
