@@ -34,7 +34,7 @@ This is the backend server for the StudyHive Web Application. It provides the AP
 - **Environment Management**: dotenv
 
 ## Live ##
-*live()*
+*live(https://assignment-11-server-mu-five.vercel.app/)*
 
 
 
