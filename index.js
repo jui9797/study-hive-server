@@ -82,10 +82,10 @@ app.get('/assignments/:id', async(req, res)=>{
   res.send(result)
   })
 
-// get maximum 3 assignments
+// get maximum 4 assignments
 app.get('/limitAssignments', async(req, res)=>{
     const cursor = assignmentCollection.find()
-    const result = await cursor.limit(3).toArray()
+    const result = await cursor.limit(4).toArray()
     res.send(result)
 })
 
